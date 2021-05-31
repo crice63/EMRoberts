@@ -31,16 +31,17 @@
 #
 # syllabify_ipa.py: prosodic parsing of eSpeak ipa transcription
 
+from re import sub
 from itertools import chain
 
 ## constants
 SLAX   = {'ˈɪ', 'ˌɪ', 'ˈɛ', 'ˌɛ', 'ˈæ', 'ˌæ', 'ˈʌ', 'ˌʌ', 'ˈʊ', 'ˌʊ'}
-VOWELS = {'ˈiː', 'ˌiː', 'iː', 'ˈeɪ', 'ˌeɪ', 'eɪ', 'ˈɑː', 'ˌɑː', 'ɑː',
-          'ˈɜː', 'ˌɜː', 'ɜː', 'ˈaʊ', 'ˌaʊ', 'aʊ', 'ˈɔː', 'ˌɔː', 'ɔː',
-          'ˈaɪ', 'ˌaɪ', 'aɪ', 'ˈoʊ', 'ˌoʊ', 'oʊ', 'ˈɔɪ', 'ˌɔɪ', 'ɔɪ',
-          'ˈuː', 'ˌuː', 'uː', 'i', 'ɪ', 'ɛ', 'æ', 'ʌ', 'ə', 'ʊ', 'ɐ', 
-		  'ˈaɪə', 'ˈaɪʊɹ', 'ˈɑːɹ', 'ɚ', 'ˈɛɹ', 'ˈɪɹ', 'ˈʊɹ', 'ˈɔːɹ', 
-		  'ˈoːɹ', 'əl', 'ˈoː', 'iə',} | SLAX
+VOWELS = {'iː', 'i', 'eɪ', 'ɑː',
+          'ɜː', 'aʊ', 'ɔː', 'ɔ',
+          'aɪ', 'oʊ', 'ɔɪ',
+          'uː',  'ɪ', 'ɛ', 'æ', 'ʌ', 'ə', 'ʊ', 'ɐ',
+		  'aɪə', 'aɪɚ', 'aɪʊɹ', 'ɑːɹ', 'ɚ', 'ɛɹ', 'ɪɹ', 'ʊɹ', 'ɔːɹ', 
+		  'oːɹ', 'əl', 'oː', 'iə', } | SLAX 
 
 ## licit medial onsets
 
@@ -145,7 +146,7 @@ def syllabify(pron, alaska_rule=True):
     onsets = []
     i = -1
     for (j, seg) in enumerate(mypron):
-        if seg in VOWELS:
+        if seg.replace('ˈ', '').replace('ˌ','') in VOWELS:
             nuclei.append([seg])
             onsets.append(mypron[i + 1:j]) # actually interludes, r.n.
             i = j
